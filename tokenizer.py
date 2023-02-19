@@ -1,4 +1,4 @@
-from regex import *
+from utils import *
 
 class Tokenizer:
     def __init__(self, expression):
@@ -7,8 +7,7 @@ class Tokenizer:
         self.active_char = self.expression[self.active_index]
         self.tokens = []
         self.string = expression
-
-        self.get_tokens()
+        self.postfix_string = ''
 
     def next_char(self):
         try:
@@ -19,7 +18,7 @@ class Tokenizer:
 
     def get_tokens(self):
         while self.active_index < len(self.expression):
-            if (self.active_char not in ALPHABET and self.active_char not in OPERATORS.keys()):
+            if (self.active_char not in ALPHABET and self.active_char not in OPERATORS):
                 raise Exception("Unsupported chars")
 
             if (self.active_char in ALPHABET):
@@ -27,7 +26,7 @@ class Tokenizer:
                     self.tokens.append('.')
                 self.tokens.append(self.active_char)
                 
-            elif (self.active_char in OPERATORS.keys()):
+            elif (self.active_char in OPERATORS):
                 if self.active_char == '(':
                     if self.active_index > 0 and self.tokens[len(self.tokens) - 1] != '(':
                         self.tokens.append('.')
@@ -49,7 +48,8 @@ class Tokenizer:
 
         if '?' in self.string or '+' in self.string:
             self.reduce()
-        return self.tokens
+        
+        return self.shunting_yard(self.string)
 
     def reduce(self):
         token_length = len(self.string)
@@ -84,3 +84,44 @@ class Tokenizer:
                     token_length = len(self.string)
 
             i += 1
+
+    def shunting_yard(self, exp):
+        i = 0
+        output = ''
+        operator_stack = []
+        while i < len(exp):
+            symbol = exp[i]
+
+            if (symbol in ALPHABET):
+                output += symbol
+            elif symbol == '*' or symbol == '|' or symbol == '.':
+                symbol_has_higher_precedence = False
+                while not symbol_has_higher_precedence and len(operator_stack) > 0:
+                    last_symbol_precedence = POSTFIX_OPERATORS.get(operator_stack[-1])
+                    current_symbol_precedence = POSTFIX_OPERATORS.get(symbol)
+                    if last_symbol_precedence >= current_symbol_precedence and last_symbol_precedence != 4:
+                        output += operator_stack.pop()
+                    else:
+                        symbol_has_higher_precedence = True
+                operator_stack.append(symbol)
+            elif symbol == '(':
+                operator_stack.append(symbol)
+            elif symbol == ')':
+                found_left_parenthesis = False
+                while not found_left_parenthesis:
+                    while len(operator_stack) > 0 and operator_stack[-1] != '(':
+                        output += operator_stack.pop()
+                    found_left_parenthesis = True
+                # print(operator_stack)
+                    if len(operator_stack) > 0:
+                        operator_stack.pop()
+
+            i += 1
+        
+        while len(operator_stack) != 0:
+            output += operator_stack.pop()   
+    
+        self.postfix_string = output
+        print("INFIX: ", self.string)
+        print("POSTFIX: ", self.postfix_string)
+        return self.postfix_string
