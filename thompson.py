@@ -4,7 +4,7 @@ from automathon import NFA
 
 def build_automata(postfix_symbols):
         automatas_stack = []
-        id_counter = 1
+        id_counter = 0
         for symbol in postfix_symbols:
             if symbol in ALPHABET:
                 node_initial_state = str(id_counter)
@@ -19,11 +19,11 @@ def build_automata(postfix_symbols):
                 id_counter += 2
                 automatas_stack.append(new_automata)
             elif symbol == '|':
-                new_initial_state = id_counter
-                new_final_state = id_counter+1
+                new_initial_state = str(id_counter)
+                new_final_state = str(id_counter+1)
                 id_counter += 2
 
-                automata_result = or_operation(str(new_initial_state), str(new_final_state), automatas_stack[-2], automatas_stack[-1])
+                automata_result = or_operation(new_initial_state, new_final_state, automatas_stack[-2], automatas_stack[-1])
                 automatas_stack.pop()
                 automatas_stack.pop()
                 automatas_stack.append(automata_result)
@@ -36,14 +36,12 @@ def build_automata(postfix_symbols):
                 new_initial_state = str(id_counter)
                 new_final_state = str(id_counter+1)
                 id_counter += 2
-            
 
                 automata_result = kleene_operation(new_initial_state, new_final_state, automatas_stack[-1])
                 automatas_stack.pop()
                 automatas_stack.append(automata_result)
                 
         automata_final = automatas_stack[-1]
-        automata_final.q_states.remove('0')
         automata1 = NFA(automata_final.q_states, automata_final.sigma, automata_final.transitions, automata_final.initial_state, {automata_final.final_state})
         automata1.view("NFA")
     
@@ -69,7 +67,6 @@ def or_operation(new_initial_state, new_final_state, automata1, automata2):
     new_states.update(new_final_state)
     new_states.update(automata1.q_states)
     new_states.update(automata2.q_states)
-    
     new_automata = Automata(new_initial_state, new_final_state, new_alphabet, new_transitions, new_states)
 
     return new_automata
@@ -88,7 +85,6 @@ def concat_operation(automata1, automata2):
         new_states = set()
         new_states.update(automata1.q_states)
         new_states.update(automata2.q_states)
-
         new_automata = Automata(automata1.initial_state, automata2.final_state, new_alphabet, new_transitions, new_states)
         return new_automata
 
