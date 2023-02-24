@@ -3,6 +3,7 @@ from automata import *
 from transition import *
 import random
 from automathon import NFA
+from thompson import *
 
 class Tokenizer:
     def __init__(self, expression):
@@ -55,7 +56,7 @@ class Tokenizer:
         
         postfix_symbols = self.shunting_yard(self.string)
 
-        self.build_automata(postfix_symbols)
+        build_automata(postfix_symbols)
                 
 
     def reduce(self):
@@ -133,48 +134,3 @@ class Tokenizer:
         print("POSTFIX: ", self.postfix_string)
         
         return self.postfix_string
-
-    def build_automata(self, postfix_symbols):
-        automata_final = Automata('', '', '')
-        automatas_stack = [] #ab|
-        id_counter = 1
-        for symbol in postfix_symbols:
-            if symbol in ALPHABET:
-                node_initial_state = id_counter
-                node_final_state = id_counter+1
-                new_automata = Automata(str(node_initial_state), str(node_final_state), str(symbol))
-
-                if id_counter == 1:
-                    automata_final = new_automata
-                id_counter += 2
-                automatas_stack.append(new_automata)
-            elif symbol == '|':
-                new_initial_state = id_counter
-                new_final_state = id_counter+1
-                id_counter += 2
-
-                automata_result, new_transitions = automata_final.or_operation(str(new_initial_state), str(new_final_state), automatas_stack[-2], automatas_stack[-1])
-                automatas_stack.pop()
-                automatas_stack.pop()
-                automata_final.set_automata(automata_result, new_transitions)
-            elif symbol == '.':
-                automata_result, new_transitions = automata_final.concat_operation(automatas_stack[-2], automatas_stack[-1])
-                automatas_stack.pop()
-                automatas_stack.pop()
-                automata_final.set_automata(automata_result, new_transitions)
-            elif symbol == '*':
-                new_initial_state = id_counter
-                new_final_state = id_counter+1
-                id_counter += 2
-
-                automata_result, new_transitions = automata_final.kleene_operation(str(new_initial_state), str(new_final_state), automata_final)
-                automata_final.set_automata(automata_result, new_transitions)
-
-        automata1 = NFA(automata_final.Qstates, automata_final.sigma, automata_final.transitions, str(automata_final.initial_state), set(automata_final.final_state))
-        automata1.view("NFA")
-
-
-
-        
-
-        
