@@ -1,9 +1,7 @@
 from utils import *
-from automata import *
-from transition import *
 import random
 from automathon import NFA
-from thompson import *
+from thompson import build_automata
 
 class Tokenizer:
     def __init__(self, expression):
