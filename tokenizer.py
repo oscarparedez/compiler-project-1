@@ -11,6 +11,8 @@ class Tokenizer:
         self.tokens = []
         self.string = expression
         self.postfix_string = ''
+        
+        self.check_for_errors(expression)
 
     def next_char(self):
         try:
@@ -18,6 +20,30 @@ class Tokenizer:
             self.active_char = self.expression[self.active_index]
         except Exception:
             self.active_char = None
+            
+    def check_for_errors(self, expression):
+        # check parentheses
+        left_parenthesis_count = expression.count('(')
+        right_parenthesis_count = expression.count(')')
+        if (left_parenthesis_count > right_parenthesis_count):
+            raise Exception('There is one left parenthesis without a match')
+        if (left_parenthesis_count < right_parenthesis_count):
+            raise Exception('There is one right parenthesis without a match')
+        
+        if expression[0] == '|':
+            raise Exception('OR operator needs a symbol to its left')
+        if expression[0] == '*':
+            raise Exception('KLEENE operator needs a symbol to its left')
+        if expression[0] == '+':
+            raise Exception('PLUS operator needs a symbol to its left')
+        if expression[0] == '?':
+            raise Exception('NULLABLE operator needs a symbol to its left')
+        
+        for i in range(len(expression)):
+            if expression[i] == '|':
+                if expression[i+1] not in ALPHABET or expression[i+1] != '(':
+                    raise Exception('OR operator needs a valid value to its right')
+        
 
     def get_tokens(self):
         while self.active_index < len(self.expression):
@@ -66,13 +92,26 @@ class Tokenizer:
 
             # Operate all ? and +
             if (self.string[i] == '?' or self.string[i] == '+'):
+                if self.string[i] == '+':
+                    plus_counter = 1
+                    is_plus = True
+                    j = i + 1
+                    while is_plus and j < token_length:
+                        if (self.string[j] == '+'):
+                            plus_counter += 1
+                        else:
+                            is_plus = False
+                        j+=1
+                    self.string = self.string.replace(self.string[i: i + plus_counter], "+")
+                    token_length = len(self.string)
+                    
                 if (self.string[i - 1] in ALPHABET):
                     start_pos = i - 1
                     end_pos = i
                     if self.string[i] == '?':
-                        self.string = self.string.replace(self.string[start_pos: end_pos + 1], self.string[start_pos] + "|ε")
+                        self.string = self.string.replace(self.string[start_pos: end_pos + 1], '(' + self.string[start_pos] + "|ε)")
                     else:
-                        self.string = self.string.replace(self.string[start_pos: end_pos + 1], self.string[start_pos] + "." + self.string[start_pos] + "*")
+                        self.string = self.string.replace(self.string[start_pos: end_pos + 1], '(' + self.string[start_pos] + "." + self.string[start_pos] + "*)")
                     # eliminate operation that uses ? and replace it by its equivalent (a? = a | E)
                     token_length = len(self.string)
                 
