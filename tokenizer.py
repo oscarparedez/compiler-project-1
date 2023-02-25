@@ -40,9 +40,8 @@ class Tokenizer:
             raise Exception('NULLABLE operator needs a symbol to its left')
         
         for i in range(len(expression)):
-            if expression[i] == '|':
-                if expression[i+1] not in ALPHABET or expression[i+1] != '(':
-                    raise Exception('OR operator needs a valid value to its right')
+            if expression[i] == '|' and expression[i+1] not in ALPHABET:
+                raise Exception('OR operator needs a valid value to its right')
         
 
     def get_tokens(self):
@@ -75,7 +74,7 @@ class Tokenizer:
         
         self.string = "".join(self.tokens)
 
-        if '?' in self.string or '+' in self.string:
+        if '?' in self.string or '+' in self.string or '*' in self.string:
             self.reduce()
         
         postfix_symbols = self.shunting_yard(self.string)
@@ -91,6 +90,19 @@ class Tokenizer:
             end_pos = None
 
             # Operate all ? and +
+            if (self.string[i] == '*'):
+                plus_counter = 1
+                is_plus = True
+                j = i + 1
+                while is_plus and j < token_length:
+                    if (self.string[j] == '*'):
+                        plus_counter += 1
+                    else:
+                        is_plus = False
+                    j+=1
+                self.string = self.string.replace(self.string[i: i + plus_counter], "*")
+                token_length = len(self.string)
+                
             if (self.string[i] == '?' or self.string[i] == '+'):
                 if self.string[i] == '+':
                     plus_counter = 1
@@ -104,6 +116,20 @@ class Tokenizer:
                         j+=1
                     self.string = self.string.replace(self.string[i: i + plus_counter], "+")
                     token_length = len(self.string)
+                
+                if self.string[i] == '?':
+                    plus_counter = 1
+                    is_plus = True
+                    j = i + 1
+                    while is_plus and j < token_length:
+                        if (self.string[j] == '?'):
+                            plus_counter += 1
+                        else:
+                            is_plus = False
+                        j+=1
+                    self.string = self.string.replace(self.string[i: i + plus_counter], "?")
+                    token_length = len(self.string)    
+                
                     
                 if (self.string[i - 1] in ALPHABET):
                     start_pos = i - 1
