@@ -5,7 +5,8 @@ from thompson import build_automata
 
 class Tokenizer:
     def __init__(self, expression):
-        self.expression = list(expression)
+        expression_no_spaces = expression.replace(' ', '')
+        self.expression = list(expression_no_spaces)
         self.active_index = 0
         self.active_char = self.expression[self.active_index]
         self.tokens = []
