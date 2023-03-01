@@ -4,14 +4,20 @@ from string import digits, ascii_lowercase, ascii_uppercase
 EPSILON = 'ε'
 HASH = '#'
 
-OPERATORS = [')', '(', '?', '+', '*', '|', '.']
+OPERATORS = [')', '(', '?', '+', '*', '.', '|']
 
 POSTFIX_OPERATORS = {
     ')': 5,
     '(': 4,
     '*': 3, #kleene
-    '.': 2, #or
-    '|': 1, #conc 
+    '.': 2, #concat
+    '|': 1, #or 
 }
 
 ALPHABET = ascii_lowercase + ascii_uppercase + digits + EPSILON
+
+def peek(stack):
+    if (stack):
+        return (stack[-1])
+    else:
+        return None
