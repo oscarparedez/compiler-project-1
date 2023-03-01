@@ -41,8 +41,12 @@ class Tokenizer:
             raise Exception('NULLABLE operator needs a symbol to its left')
         
         for i in range(len(expression)):
-            if expression[i] == '|' and expression[i+1] not in ALPHABET:
-                raise Exception('OR operator needs a valid value to its right')
+            if expression[i] == '|':
+                if i == len(expression) - 1:
+                    raise Exception('OR operator cannot be the last symbol of the expression')
+                elif (expression[i+1] not in ALPHABET):
+                    raise Exception('OR operator needs a valid value to its right')
+            
         
 
     def get_tokens(self):
