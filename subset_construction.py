@@ -15,20 +15,21 @@ def subset_construction(sigma, transitions, initial_state):
                     expression_matches = True
                 else:
                     t_states_array.append(result)
-    print("SUBCONJUNTOS: ", t_states_array)
+    # print("SUBCONJUNTOS: ", t_states_array)
     
 def calculate_move(origin_states, symbol, transitions):
     move = set()
     for state in origin_states:
-        for key in transitions.get(state):
-            if key == symbol:
-                move.update(transitions.get(state).get(key))
-                for child_state in transitions.get(state).get(key):
-                    child_states = transitions.get(child_state)
-                    if child_states != None:
-                        for child_key in child_states:
-                            if child_key == symbol:
-                                move.update(transitions.get(child_state).get(child_key))
+        if transitions.get(state) != None:
+            for key in transitions.get(state):
+                if key == symbol:
+                    move.update(transitions.get(state, {}).get(key, {}))
+                    for child_state in transitions.get(state).get(key):
+                        child_states = transitions.get(child_state)
+                        if child_states != None:
+                            for child_key in child_states:
+                                if child_key == symbol:
+                                    move.update(transitions.get(child_state, {}).get(child_key, {}))
     return move
 
 def calculate_e_closure(origin_states, transitions):

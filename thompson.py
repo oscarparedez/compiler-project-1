@@ -2,6 +2,7 @@ from automata import *
 from utils import *
 from subset_construction import *
 from automathon import NFA
+from ExpressionTree.ExpressionTree import *
 
 def build_automata(postfix_symbols):
         automatas_stack = []
@@ -47,6 +48,9 @@ def build_automata(postfix_symbols):
         automata1.view("NFA")
         
         subset_construction(automata_final.sigma, automata_final.transitions, automata_final.initial_state)
+        tree = ExpressionTree(postfix_symbols)
+        root = tree.build_tree()
+        tree.print_inorder(root)
     
 def or_operation(new_initial_state, new_final_state, automata1, automata2):
     new_alphabet = automata1.sigma
