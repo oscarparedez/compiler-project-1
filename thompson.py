@@ -46,7 +46,7 @@ def build_automata(postfix_symbols):
         automata1 = NFA(automata_final.q_states, automata_final.sigma, automata_final.transitions, automata_final.initial_state, {automata_final.final_state})
         automata1.view("NFA")
         
-        subset_construction(automata_final.q_states, automata_final.sigma, automata_final.transitions, automata_final.initial_state, {automata_final.final_state})
+        subset_construction(automata_final.sigma, automata_final.transitions, automata_final.initial_state)
     
 def or_operation(new_initial_state, new_final_state, automata1, automata2):
     new_alphabet = automata1.sigma
