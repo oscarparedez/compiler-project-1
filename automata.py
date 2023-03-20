@@ -6,4 +6,3 @@ class Automata:
         self.final_state = final_state
         self.sigma.update(sigma)
         self.transitions = transitions
-

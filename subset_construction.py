@@ -1,6 +1,7 @@
 from utils import *
 from automata import *
 from automathon import DFA
+from simulation import *
 
     
 def subset_construction(sigma, transitions, initial_state, final_state):
@@ -59,50 +60,10 @@ def subset_construction(sigma, transitions, initial_state, final_state):
                 if value == u:
                     final_states_stack.update({key})
 
-    automata = DFA(states_stack, sigma, transitions_stack, 'q0', final_states_stack)
-    automata.view("DFA")
+    initial = 'q0'
+    automata = DFA(states_stack, sigma, transitions_stack, initial, final_states_stack)
+    automata.view("DFA FROM SUBSETS")
+    return initial, final_states_stack, transitions_stack
 
-    accepts = NFA_accepts_R("aabbbbbba", initial_state, final_state, transitions)
-    print("IS STRING ACCEPTED BY NFA?", accepts)
-    
-def calculate_move(origin_states, symbol, transitions):
-    move = set()
-    for state in origin_states:
-        if transitions.get(state) == None:
-            move.update()
-        else:
-            for key in transitions.get(state):
-                if key == symbol:
-                    if transitions.get(state).get(key) != set():
-                        move.update(transitions.get(state).get(key))
-    return move
 
-def calculate_e_closure(origin_states, transitions):
-    closures = set()
-    for state in origin_states:
-        closures.update({state})
-        child_states = transitions.get(state , {}).get(EPSILON, {})
-        while len(child_states) != 0:
-            if child_states != {}:
-                closures.update(child_states)
-            next_states = set()
-            for state in child_states:
-                if state != None:
-                    next_states.update(transitions.get(state, {}).get(EPSILON, {}))
-            child_states = next_states - closures
-    return closures
-
-def NFA_accepts_R(string, initial_state, final_states, transitions):
-    s = calculate_e_closure({initial_state}, transitions)
-    i = 0
-    while (i < len(string)):
-        c = string[i]
-        move = calculate_move(s, c, transitions)
-        s = calculate_e_closure(move, transitions)
-        i += 1
-    for state in final_states:
-        if state in s:
-            return True
-    
-    return False
     

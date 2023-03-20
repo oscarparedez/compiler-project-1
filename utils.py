@@ -2,7 +2,7 @@ from string import digits, ascii_lowercase, ascii_uppercase
 
 # Extras
 EPSILON = 'ε'
-HASH = '#'
+HASHTAG = '#'
 
 OPERATORS = [')', '(', '?', '+', '*', '.', '|']
 
@@ -14,7 +14,8 @@ POSTFIX_OPERATORS = {
     '|': 1, #or 
 }
 
-ALPHABET = ascii_lowercase + ascii_uppercase + digits + EPSILON
+# ALPHABET = ascii_lowercase + ascii_uppercase + digits + EPSILON
+ALPHABET = ascii_lowercase + ascii_uppercase + digits + EPSILON + HASHTAG
 
 def peek(stack):
     if (stack):

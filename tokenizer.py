@@ -84,8 +84,8 @@ class Tokenizer:
             self.operate_nullable_and_plus()
         
         postfix_symbols = self.shunting_yard(self.string)
-
-        build_automata(postfix_symbols)
+        
+        return postfix_symbols
 
     def reduce_stacked_operators(self):
         token_length = len(self.string)

@@ -7,3 +7,7 @@ class Node:
         self.right = right
         self.left = left
         self.operator = value == '*' or value == '|' or value == '.'
+        self.nullability = None
+        self.firstpos = None
+        self.lastpos = None
+        self.followpos = set()
