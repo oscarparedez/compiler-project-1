@@ -1,11 +1,11 @@
-digraph "DFA DIRECT" {
+digraph "DFA MINIMIZED" {
 	graph [rankdir=LR]
 	"" [label="" shape=plaintext]
 	q4 [label=q4 shape=doublecircle]
 	q7 [label=q7 shape=doublecircle]
 	q1 [label=q1 shape=circle]
-	q0 [label=q0 shape=circle]
 	q6 [label=q6 shape=circle]
+	q0 [label=q0 shape=circle]
 	q5 [label=q5 shape=circle]
 	q3 [label=q3 shape=circle]
 	q2 [label=q2 shape=circle]
