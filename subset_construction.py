@@ -63,7 +63,7 @@ def subset_construction(sigma, transitions, initial_state, final_state):
     initial = 'q0'
     automata = DFA(states_stack, sigma, transitions_stack, initial, final_states_stack)
     automata.view("DFA FROM SUBSETS")
-    return initial, final_states_stack, transitions_stack
+    return states_stack, sigma, initial, final_states_stack, transitions_stack
 
 
     
