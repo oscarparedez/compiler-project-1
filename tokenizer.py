@@ -202,7 +202,7 @@ class Tokenizer:
             output += operator_stack.pop()   
     
         self.postfix_string = output
-        print("INFIX: ", self.string)
-        print("POSTFIX: ", self.postfix_string)
+        # print("INFIX: ", self.string)
+        # print("POSTFIX: ", self.postfix_string)
         
         return self.postfix_string

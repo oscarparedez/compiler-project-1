@@ -142,6 +142,6 @@ class Minimization:
 
     def simulate(self):
         accepts = DFA_accepts_R('abbbbbbbbbb', 'q0', self.final_states, self.transitions | self.final_transitions)
-        print("ACCEPTA MINIMIZACION "+self.type, accepts)
+        # print("ACCEPTA MINIMIZACION "+self.type, accepts)
         
             
