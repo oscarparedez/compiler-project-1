@@ -1,14 +1,17 @@
 from utils import *
 from ExpressionTree.ExpressionTree import *
 from ExpressionTree.Node import *
+from graphviz import Digraph
 
+file_to_open = 'slr-4.yal'
 def read_yal():
-    with open('yal/slr-2.yal') as f:
+    variables = {}
+    infixes = {}
+    results = []
+    rules = ''
+    with open('yal/'+file_to_open) as f:
         lines = f.readlines()
-        variables = {}
-        infixes = {}
-        results = []
-        rules = ''
+
         for line in lines:
             if "let" in line:
                 key = line.split('=')[0].split("let ")[1].strip()
@@ -17,13 +20,11 @@ def read_yal():
                 if (len(detect_substring(variables, val)) != 0):
                     temp_val = val
                     var_names = detect_substring(variables, val)
-                    # print("FOUND THESE", val, var_names)
                     for var in var_names:
-                        # print("HERE FOUND", var, infixes[var])
-                        temp_val = temp_val.replace(var, '('+str(infixes[var])+')')
-                        # variables[key] = temp_val
-                        # infixes[key] = temp_val
-                        # results.append(temp_val)
+                        if infixes[var][0] == '(' and infixes[var][len(infixes[var])-1] == ')':
+                            temp_val = temp_val.replace(var, str(infixes[var]))
+                        else:
+                            temp_val = temp_val.replace(var, '(' + str(infixes[var] + ')'))
                         
                     if '[' in val and ']' in val:
                         starting_pos = 0
@@ -39,7 +40,9 @@ def read_yal():
                                 temp_val = temp_val[:starting_pos] + new + temp_val[ending_pos + 1:]
                                 starting_pos = ending_pos
                             starting_pos += 1
-                                
+                
+                    temp_val = temp_val.replace("'.'", 'Ц')
+                    
                     variables[key] = temp_val
                     infixes[key] = temp_val
                     results.append(temp_val)
@@ -48,7 +51,6 @@ def read_yal():
                 else:
                     if "'" in val or '"' in val:
                         if "-" in val:
-                            # print("VAL!", val)
                             my_list = split_by_quotes(val)
                             i = 0
                             new_list = [] 
@@ -59,18 +61,15 @@ def read_yal():
                             for i in range(len(new_list)):
                                 new_list[i] = range_to_list(new_list[i])
                                 for j in range(len(new_list[i])):
-                                    if j != len(new_list[i]) - 1:
+                                    if j == 0:
+                                        new_infix += '('+str(new_list[i][j])+'|'
+                                    elif j != len(new_list[i]) - 1:
                                         new_infix += str(new_list[i][j])+'|'
                                     else:
-                                        new_infix += str(new_list[i][j])
-                                if i != len(new_list) - 1:
-                                    new_infix += '|'
-                                    
-                            # print("SUMMARY", new_infix, new_list)
-                            
-                            infixes[key] = new_infix
+                                        new_infix += str(new_list[i][j]) + ")."
+                            infixes[key] = new_infix[:-1]
                             variables[key] = new_list
-                            results.append(new_infix)
+                            results.append(new_infix[:-1])
                             
                         elif 'delim' in key:
                             my_list = []
@@ -80,11 +79,11 @@ def read_yal():
                                     my_list.append(val[active_char])
                                 elif val[active_char] == "\\":
                                     if val[active_char+1] == 'n':
-                                        my_list.append(r"\n")
+                                        my_list.append('⌐')
                                     if val[active_char+1] == 's':
-                                        my_list.append(' ')
+                                        my_list.append('¬')
                                     if val[active_char+1] == 't':
-                                        my_list.append(r"\t")
+                                        my_list.append('■')
                                     active_char += 1
                                 active_char += 1
                                 
@@ -96,49 +95,81 @@ def read_yal():
                                     new_infix += str(my_list[i])+'|'
                                 else:
                                     new_infix += str(my_list[i])
-                                    
+
+                            new_infix = new_infix.replace('.', 'Ц')
                             infixes[key] = new_infix
                             variables[key] = my_list
                             results.append(new_infix)
-                            
-            elif line.startswith('    '):
-                first_rule = line.split()[0]
-                rules += infixes[first_rule]
-            elif line.startswith('  | '):
-                rule = line.split('{')[0].strip()
-                rule_declaration = rule.split('|')[1].strip().replace("'", '')
-                # print("RULE DECL", rule_declaration)
+                        else:
+                            new_infix = val[2: -2]
+                            new_infix = '(' + '|'.join(new_infix) + ')'
+                            infixes[key] = new_infix
+                            variables[key] = new_infix
+                            results.append(new_infix)
+
                     
-                                        
- 
-                       
-        # print("NEW VARS", variables)
-        # print("RESULTS", results)
+        # Preprocessing #1: Concatenation
         infixes_values = list(infixes.values())
+        infixes_keys = list(infixes.keys())
+
+        for i in range(len(infixes_values)):
+            infixes_values[i] = get_tokens(infixes_values[i])
+
+        # Preprocessing #2: Operate Nullable and Plus symbols
         for i in range(len(infixes_values)):
             if '?' in infixes_values[i] or '+' in infixes_values[i]:
                 infixes_values[i] = str(operate_nullable_and_plus(infixes_values[i]))
-                # print("THIS ENTERED THE CONDITION", infixes_values[i])
-        
-        # Concatenate based on rules
-        print("INFIXES", infixes)
 
-        # postfixes_values = []
-        # for i in range(len(infixes_values)):      
-        #     postfixes_values.append(shunting_yard(infixes_values[i]))
-        #     print("NEW INFIX", infixes_values[i])
-            
-            
-        # for i in range(len(postfixes_values)):
-        #     print("POSTFIX: ", postfixes_values[i])
-            # print(print_postorder(generate_tree(postfixes_values[i])))
+    # Read rules
+    with open('yal/'+file_to_open) as f:
+        lines = f.readlines()
+        for line in lines:
+            if line.startswith('    '):
+                first_rule = line.split()[0]
+                # Get index of the first rule in infixes_keys
+                index_of_rule = infixes_keys.index(first_rule)
+                rules += infixes_values[index_of_rule] + '|'
+            elif line.startswith('  | '):
+                rule = line.split('{')[0].strip()
+                rule_value = rule.split('|')[1].strip()
+
+                if rule_value == "'*'" or rule_value == '"*"':
+                    rule_value = 'Ж'
+                elif rule_value == "'('" or rule_value == '"("':
+                    rule_value = 'Л'
+                elif rule_value == "')'" or rule_value == '")"':
+                    rule_value = 'Ф'
+                elif rule_value == "'.'" or rule_value == '"."':
+                    rule_value = 'Ц'
+                    
+                else:
+                    if (rule_value[0] == "'" and rule_value[len(rule_value)-1] == "'") or (rule_value[0] == '"' and rule_value[len(rule_value)-1] == '"'):
+                        rule_value = rule_value.replace("'", '')
+                        rule_value = rule_value.replace('"', '')
+                        if len(rule_value) > 1:
+                            new_rule_value = '('
+                            for i in range(len(rule_value)):
+                                new_rule_value += rule_value[i] + '.'
+                            rule_value = new_rule_value[:-1] + ')'
+                    else:
+                        rule_value = rule_value.replace("'", '')
+                        rule_value = rule_value.replace('"', '')
+                    
+                if rule_value in infixes_keys:
+                    # Get index of the rule in infixes_keys
+                    index_of_rule = infixes_keys.index(rule_value)
+                    rules += infixes_values[index_of_rule] + '|'
+                else:
+                    rules += rule_value + '|'
+        rules = rules[:-1]
+    rules = rules.replace('s.t.r', '(' + '|'.join(UNDERSCORE) + ')')
+    postfix_rules = shunting_yard(rules)
+
+    tree = build_tree(postfix_rules)
+
+    root = render(tree)
             
 def transform_string(s):
-    """
-    This function takes a string with one or more characters and transforms it
-    to a string with the characters separated by a pipe symbol and enclosed in
-    parentheses.
-    """
     result = '(' + '|'.join(s) + ')'
     return result     
         
@@ -153,9 +184,11 @@ def split_by_quotes(string):
                 if string[j] == "'":
                     new_string = string[i+1:j]
                     if new_string == '\\n':
-                        substrings.append(r"\n")
+                        substrings.append('⌐')
                     elif new_string == '\\t':
-                        substrings.append(r"\t")
+                        substrings.append('■')
+                    elif new_string == '\\s':
+                        substrings.append('¬')
                     else:
                         substrings.append(new_string)
 
@@ -219,7 +252,6 @@ def operate_nullable_and_plus(infix_string):
                 if infix_string[i] == '?':
                     infix_string = infix_string.replace(infix_string[start_pos: end_pos + 1], '(' + term + '|ε)')
                 else:
-                    # print("ENTERS HERE????", infix_string[start_pos: end_pos + 1])
                     infix_string = infix_string.replace(infix_string[start_pos: end_pos + 1], '(' + term + '.' + term + '*)')
                 token_length = len(infix_string)
 
@@ -227,93 +259,129 @@ def operate_nullable_and_plus(infix_string):
     return str(infix_string)
 
 def shunting_yard(exp):
-    i = 0
-    output = ''
-    operator_stack = []
-    while i < len(exp):
-        symbol = exp[i]
-
-        if (symbol in ALPHABET):
-            output += symbol
-        elif symbol == '\\':
-            if exp[i+1] == 'n':
-                output += r"\n"
-            elif exp[i+1] == 't':
-                output += r"\t"
-            elif exp[i+1] == 's':
-                output += ' '
-            i += 1
-        elif symbol == ' ':
-            output += ' '
-        elif symbol == '*' or symbol == '|' or symbol == '.':
-            while len(operator_stack) != 0 and (peek(operator_stack) != '(') and (POSTFIX_OPERATORS.get(peek(operator_stack)) >= POSTFIX_OPERATORS.get(symbol)):
-                output += operator_stack.pop()
-            operator_stack.append(symbol)
-        elif symbol == '(':
-            operator_stack.append(symbol)
-        elif symbol == ')':
-            found_left_parenthesis = False
-            while not found_left_parenthesis:
-                while len(operator_stack) > 0 and operator_stack[-1] != '(':
+        i = 0
+        output = ''
+        operator_stack = []
+        while i < len(exp):
+            symbol = exp[i]
+            symbol_is_not_operator = symbol != '*' and symbol != '|' and symbol != '.' and symbol != '(' and symbol != ')'
+            if (symbol_is_not_operator):
+                output += symbol
+            elif symbol == '*' or symbol == '|' or symbol == '.':
+                while len(operator_stack) != 0 and (peek(operator_stack) != '(') and (POSTFIX_OPERATORS.get(peek(operator_stack)) >= POSTFIX_OPERATORS.get(symbol)):
                     output += operator_stack.pop()
-                found_left_parenthesis = True
-                if len(operator_stack) > 0:
-                    operator_stack.pop()
+                operator_stack.append(symbol)
+            elif symbol == '(':
+                operator_stack.append(symbol)
+            elif symbol == ')':
+                found_left_parenthesis = False
+                while not found_left_parenthesis:
+                    while len(operator_stack) > 0 and operator_stack[-1] != '(':
+                        output += operator_stack.pop()
+                    found_left_parenthesis = True
+                    if len(operator_stack) > 0:
+                        operator_stack.pop()
 
-        i += 1
+            i += 1
+        
+        while len(operator_stack) != 0:
+            output += operator_stack.pop()   
     
-    while len(operator_stack) != 0:
-        output += operator_stack.pop()   
+        postfix_string = output
+        
+        return postfix_string
 
-    postfix_string = output
-    # print("INFIX: ", exp)
-    # print("POSTFIX: ", postfix_string)
+def get_tokens(expression):
+    active_index = 0
+    tokens = []
+    while active_index < len(expression):
+        if (expression[active_index] in ALPHABET):
+            if active_index > 0 and (tokens[len(tokens) - 1] in ALPHABET or tokens[len(tokens) - 1] == ')' or tokens[len(tokens) - 1] == '?' or tokens[len(tokens) - 1] == '*' or tokens[len(tokens) - 1] == '+'):
+                tokens.append('.')
+            tokens.append(expression[active_index])
+        elif expression[active_index] == ' ':
+            tokens.append('¬')
+        elif (expression[active_index]) == '\\':
+            if expression[active_index+1] == 'n':
+                tokens.append('⌐')
+            elif expression[active_index+1] == 't':
+                tokens.append('■')
+            active_index += 1
+        elif (expression[active_index]) == "'" and (expression[active_index+2]) == "'":
+            tokens.append(expression[active_index + 1])
+            active_index += 2
+        elif (expression[active_index] in OPERATORS):
+            if expression[active_index] == '(':
+                if active_index > 0 and tokens[len(tokens) - 1] != '(' and tokens[len(tokens) - 1] != '|':
+                    tokens.append('.')
+                tokens.append('(')
+            elif expression[active_index] == ')':
+                tokens.append(')')
+            elif expression[active_index] == '*':
+                tokens.append('*')
+            elif expression[active_index] == '?':
+                tokens.append('?')
+            elif expression[active_index] == '+':
+                tokens.append('+')
+            elif expression[active_index] == '|':
+                tokens.append('|')
+        else:
+            tokens.append(expression[active_index])
+        
+        active_index += 1
     
-    return postfix_string
+    result = "".join(tokens)
 
-def generate_tree(postfix):
+    return result
+
+def build_tree(postfix):
     nodes = []
-    node_id = 0
-    pos_counter = 0
-    while pos_counter < len(postfix):
-        is_operator = postfix[pos_counter] == '*' or postfix[pos_counter] == '|' or postfix[pos_counter] == '.'
+    node_id = 1
+    for symbol in postfix:
+        is_operator = symbol == '*' or symbol == '|' or symbol == '.'
         if not is_operator:
-            if postfix[pos_counter] == EPSILON:
-                nodes.append(Node(None, postfix[pos_counter]))
+            if symbol == EPSILON:
+                nodes.append(Node(None, symbol))
             else:
-                if postfix[pos_counter] == '\\':
-                    if postfix[pos_counter+1] == 'n':
-                        nodes.append(Node(node_id, "ASCII 10"))
-                        pos_counter += 1
-                        
-                    elif postfix[pos_counter+1] == 't':
-                        nodes.append(Node(node_id, "ASCII 9"))
-                        pos_counter += 1
-                elif postfix[pos_counter] == ' ':
-                    nodes.append(Node(node_id, "ASCII 32"))
-                else:
-                    nodes.append(Node(node_id, postfix[pos_counter]))
+                if symbol == '¬':
+                    symbol = "SPACE"
+                elif symbol == '■':
+                    symbol = "TAB"
+                elif symbol == '⌐':
+                    symbol = "NEWLINE"
+                elif symbol == 'Ж':
+                    symbol = '* CHAR'
+                elif symbol == 'Л':
+                    symbol = '('
+                elif symbol == 'Ф':
+                    symbol = ')'
+                elif symbol == 'Ц':
+                    symbol = '. CHAR'
+                nodes.append(Node(node_id, symbol))
                 node_id += 1
         else:
-            if postfix[pos_counter] == '*':
+            if symbol == '*':
                 right = None
             else:
                 right = nodes.pop()
             left = nodes.pop()
-            new_node = Node(None, postfix[pos_counter], left, right)
+            new_node = Node(None, symbol, left, right)
             nodes.append(new_node)
-        pos_counter += 1
     root = nodes.pop()
     return root
 
-def print_postorder(root):
+def render(root):
+    digraph = Digraph()
 
-    if root:
-        # First recursive on left child
-        print_postorder(root.left)
-        
-        # now recursive on right child
-        print_postorder(root.right)
+    def add_node(node):
+        digraph.node(str(id(node)), str(node.value))
+        if node.left:
+            digraph.edge(str(id(node)), str(id(node.left)), label='L')
+            add_node(node.left)
+        if node.right:
+            digraph.edge(str(id(node)), str(id(node.right)), label='R')
+            add_node(node.right)
 
-        # then print the data of node
-        print("---", root.value),
+    add_node(root)
+
+    digraph.render(file_to_open+'.pdf', view=True)
