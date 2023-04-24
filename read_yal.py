@@ -3,7 +3,7 @@ from ExpressionTree.ExpressionTree import *
 from ExpressionTree.Node import *
 from graphviz import Digraph
 
-file_to_open = 'slr-0.yal'
+file_to_open = 'slr-1.yal'
 def read_yal():
     variables = {}
     infixes = {}
@@ -205,6 +205,8 @@ def read_yal():
                         if '{' in line:
                             if '}' in line:
                                 dictionary[key] = line[line.index('{')+1 : line.index('}')]
+                        elif '{' not in line and '}' not in line:
+                            dictionary[key] = ''
                     else:
                         if '}' not in line:
                             value += line + ' '
@@ -227,6 +229,8 @@ def read_yal():
                         value += line[:line.index('}')].strip()
                         dictionary[key] = value
                         value = ''
+                    elif '{' not in line and '}' not in line:
+                        dictionary[key] = ''
                         
                     else:
                         value += line + ' '
