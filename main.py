@@ -51,4 +51,12 @@ acepts_dfa_from_subsets = DFA_accepts_R(simulation_string, initial, final_states
 # minimization_dfa.simulate()
 
 
-read_yal()
+postfix_yal = read_yal()
+root = build_tree(postfix_yal)
+tree = ExpressionTree(postfix_yal)
+tree.root = root
+tree.nullable(tree.root)
+tree.firstpos(tree.root)
+tree.lastpos(tree.root)
+tree.followpos(tree.root)
+states_stack, sigma, transitions_stack, initial_state, final_states_stack = tree.generate_transitions(root)

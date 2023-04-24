@@ -157,14 +157,18 @@ class ExpressionTree:
                         if child_node.id == node:
                             child_node.followpos.update(right_child_first_pos)
                     
-    def generate_transitions(self, root, sigma):
-        s0 = root.firstpos     
+    def generate_transitions(self, root):
+        sigma = ''
+        for character in self.postfix:
+            if character != '.' and character != '*' and character != '|' and character != '#' and character not in sigma:
+                sigma += character
+        
+        s0 = root.firstpos 
         s0_children_nodes = []
         root_children_array = self.get_children_from_node(root, s0_children_nodes)
         s0_nodes = []
         for node in s0:
             for child_node in root_children_array:
-                if child_node.id == node:
                     s0_nodes.append(child_node)
         
         t_states = {'q0': s0}
@@ -225,7 +229,7 @@ class ExpressionTree:
                         final_states_stack.update({key})
         
         automata = DFA(states_stack, sigma, transitions_stack, 'q0', final_states_stack)
-        automata.view("DFA DIRECT")
+        automata.view("DFA DIRECT - YALEX")
         
         return (states_stack, sigma, transitions_stack, 'q0', final_states_stack)
             

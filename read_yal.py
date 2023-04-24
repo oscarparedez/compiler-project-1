@@ -3,7 +3,7 @@ from ExpressionTree.ExpressionTree import *
 from ExpressionTree.Node import *
 from graphviz import Digraph
 
-file_to_open = 'slr-4.yal'
+file_to_open = 'slr-0.yal'
 def read_yal():
     variables = {}
     infixes = {}
@@ -62,11 +62,14 @@ def read_yal():
                                 new_list[i] = range_to_list(new_list[i])
                                 for j in range(len(new_list[i])):
                                     if j == 0:
-                                        new_infix += '('+str(new_list[i][j])+'|'
+                                        if i == 0:
+                                            new_infix += ''+str(new_list[i][j])+'|'
+                                        else:
+                                            new_infix += str(new_list[i][j])+'|'
                                     elif j != len(new_list[i]) - 1:
                                         new_infix += str(new_list[i][j])+'|'
                                     else:
-                                        new_infix += str(new_list[i][j]) + ")."
+                                        new_infix += str(new_list[i][j]) + "|"
                             infixes[key] = new_infix[:-1]
                             variables[key] = new_list
                             results.append(new_infix[:-1])
@@ -124,50 +127,117 @@ def read_yal():
     with open('yal/'+file_to_open) as f:
         lines = f.readlines()
         for line in lines:
-            if line.startswith('    '):
-                first_rule = line.split()[0]
-                # Get index of the first rule in infixes_keys
-                index_of_rule = infixes_keys.index(first_rule)
-                rules += infixes_values[index_of_rule] + '|'
-            elif line.startswith('  | '):
-                rule = line.split('{')[0].strip()
-                rule_value = rule.split('|')[1].strip()
+            line = line.strip()
+            if line != '' and 'rule tokens' not in line and 'let ' not in line and 'if' not in line and 'else' not in line and line.split(' ', 1)[0] != '}' and line.split(' ', 1)[0] != '(*':
+                if line[0] != '|' and line.split(' ', 1)[0] != 'return':
+                    first_rule = line.split()[0]
+                    # Get index of the first rule in infixes_keys
+                    index_of_rule = infixes_keys.index(first_rule)
+                    rules += infixes_values[index_of_rule] + '.#' + '|'
+                elif line[0] == '|':
+                    rule = line.split('{')[0].strip()
+                    rule_value = rule.split('|')[1].strip()
 
-                if rule_value == "'*'" or rule_value == '"*"':
-                    rule_value = 'Ж'
-                elif rule_value == "'('" or rule_value == '"("':
-                    rule_value = 'Л'
-                elif rule_value == "')'" or rule_value == '")"':
-                    rule_value = 'Ф'
-                elif rule_value == "'.'" or rule_value == '"."':
-                    rule_value = 'Ц'
-                    
-                else:
-                    if (rule_value[0] == "'" and rule_value[len(rule_value)-1] == "'") or (rule_value[0] == '"' and rule_value[len(rule_value)-1] == '"'):
-                        rule_value = rule_value.replace("'", '')
-                        rule_value = rule_value.replace('"', '')
-                        if len(rule_value) > 1:
-                            new_rule_value = '('
-                            for i in range(len(rule_value)):
-                                new_rule_value += rule_value[i] + '.'
-                            rule_value = new_rule_value[:-1] + ')'
+                    if rule_value == "'*'" or rule_value == '"*"':
+                        rule_value = 'Ж'
+                    elif rule_value == "'('" or rule_value == '"("':
+                        rule_value = 'Л'
+                    elif rule_value == "')'" or rule_value == '")"':
+                        rule_value = 'Ф'
+                    elif rule_value == "'.'" or rule_value == '"."':
+                        rule_value = 'Ц'
+                        
                     else:
-                        rule_value = rule_value.replace("'", '')
-                        rule_value = rule_value.replace('"', '')
+                        if (rule_value[0] == "'" and rule_value[len(rule_value)-1] == "'") or (rule_value[0] == '"' and rule_value[len(rule_value)-1] == '"'):
+                            rule_value = rule_value.replace("'", '')
+                            rule_value = rule_value.replace('"', '')
+                            if len(rule_value) > 1:
+                                new_rule_value = '('
+                                for i in range(len(rule_value)):
+                                    char_from_rule_value = rule_value[i]
+                                    if rule_value[i] == "*":
+                                        # print("IS *")
+                                        char_from_rule_value = 'Ж'
+                                    elif rule_value[i] == "(":
+                                        char_from_rule_value = 'Л'
+                                    elif rule_value[i] == ")":
+                                        char_from_rule_value = 'Ф'
+                                    elif rule_value[i] == ".":
+                                        char_from_rule_value = 'Ц'
+                                    new_rule_value += char_from_rule_value + '.'
+                                rule_value = new_rule_value[:-1] + ')'
+                        else:
+                            rule_value = rule_value.replace("'", '')
+                            rule_value = rule_value.replace('"', '')
                     
-                if rule_value in infixes_keys:
-                    # Get index of the rule in infixes_keys
-                    index_of_rule = infixes_keys.index(rule_value)
-                    rules += infixes_values[index_of_rule] + '|'
+                    if rule_value in infixes_keys:
+                        # Get index of the rule in infixes_keys
+                        index_of_rule = infixes_keys.index(rule_value)
+                        rules += infixes_values[index_of_rule] + '.#' + '|'
+                    else:
+                        rules += rule_value + '.#' + '|'
                 else:
-                    rules += rule_value + '|'
+                    pass
         rules = rules[:-1]
     rules = rules.replace('s.t.r', '(' + '|'.join(UNDERSCORE) + ')')
     postfix_rules = shunting_yard(rules)
 
     tree = build_tree(postfix_rules)
-
     root = render(tree)
+    
+    dictionary = {}
+    
+    with open('yal/'+file_to_open) as f:
+        lines = f.readlines()
+        key = ''
+        value = ''
+        is_rule = False
+        for line in lines:
+            line = line.strip()
+            if is_rule and line != '':
+                if line[0] != '|':
+                    first_string = line.split()[0]
+                    # print("FIRST", key)
+                    if first_string in infixes_keys:
+                        key = first_string
+                        key = key.replace('\t', '')
+                        key = key.replace("'", '')
+                        if '{' in line:
+                            if '}' in line:
+                                dictionary[key] = line[line.index('{')+1 : line.index('}')]
+                    else:
+                        if '}' not in line:
+                            value += line + ' '
+                        else:
+                            value += line[:line.index('}')].strip()
+                            dictionary[key] = value
+                            value = ''
+                elif line[0] == '|':
+                    first_string = line.split(' ')[1]
+                    key = first_string
+                    key = key.replace('\t', '')
+                    key = key.replace("'", '')
+                    
+                    if '{' in line:
+                        if '}' in line:
+                            dictionary[key] = line[line.index('{')+1 : line.index('}')]
+                        else:
+                            value += line[line.index('{')+1 :].strip()
+                    elif '}' in line:
+                        value += line[:line.index('}')].strip()
+                        dictionary[key] = value
+                        value = ''
+                        
+                    else:
+                        value += line + ' '
+                            
+                            
+            if 'rule tokens ' in line:
+                is_rule = True
+                
+    print(dictionary)
+                            
+    return postfix_rules
             
 def transform_string(s):
     result = '(' + '|'.join(s) + ')'
@@ -343,20 +413,20 @@ def build_tree(postfix):
             if symbol == EPSILON:
                 nodes.append(Node(None, symbol))
             else:
-                if symbol == '¬':
-                    symbol = "SPACE"
-                elif symbol == '■':
-                    symbol = "TAB"
-                elif symbol == '⌐':
-                    symbol = "NEWLINE"
-                elif symbol == 'Ж':
-                    symbol = '* CHAR'
-                elif symbol == 'Л':
-                    symbol = '('
-                elif symbol == 'Ф':
-                    symbol = ')'
-                elif symbol == 'Ц':
-                    symbol = '. CHAR'
+                # if symbol == '¬':
+                #     symbol = "SPACE"
+                # elif symbol == '■':
+                #     symbol = "TAB"
+                # elif symbol == '⌐':
+                #     symbol = "NEWLINE"
+                # elif symbol == 'Ж':
+                #     symbol = '* CHAR'
+                # elif symbol == 'Л':
+                #     symbol = '('
+                # elif symbol == 'Ф':
+                #     symbol = ')'
+                # elif symbol == 'Ц':
+                #     symbol = '. CHAR'
                 nodes.append(Node(node_id, symbol))
                 node_id += 1
         else:
@@ -384,4 +454,4 @@ def render(root):
 
     add_node(root)
 
-    digraph.render(file_to_open+'.pdf', view=True)
+    digraph.render(file_to_open+'.pdf', view=False)
