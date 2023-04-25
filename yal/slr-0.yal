@@ -1,4 +1,10 @@
-	let delim = [' ''\t''\n']
+	(* print("Esto es un header")
+print("Hola")  *)
+
+
+(* Lexer para Gramática No. 1 - Expresiones aritméticas simples para variables *)
+
+let delim = [' ''\t''\n']
  let ws = delim+ 
 let letter = ['A'-'Z''a'-'z']
 
@@ -6,17 +12,17 @@ let digit = ['0123456789']
    let id = letter(letter|digit)*
 
 rule tokens = 
-    ws  {return NONE}
+    ws  {print('WS')}
   
     | id  {  
-				if t.value = 0: return ID
-				else:
-					return NONE
-
-	}         (* Cambie por una acción válida, que devuelva el token *)
+				if True: print("ID")
+	}
   
-	| '+'       { return PLUS }
-  	| '*'       { return TIMES }
-  	| '('       { return LPAREN }
-  	| ')'       { return RPAREN }
-	| '*)'		 { return STARTCOMMENT }
+	| '+'       { print('PLUS') }
+  	| '*'       { print('TIMES') }
+  	| '('       { print('LPAREN') }
+  	| ')'       { print('RPAREN') }
+	| '*)'		 { print('STARTCOMMENT') }
+
+
+(* print("adios") *)

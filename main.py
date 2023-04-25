@@ -7,6 +7,8 @@ from utils import *
 from minimization import *
 from simulation import *
 from read_yal import *
+from scanner import *
+from read_file import *
 
 # regex_options = ['((a|b|c).(a|b|c)*)', '0?(1?)?0*', '(a*|b*)c', '(b|b)*abb(a|b)*', '(a|ε)b(a+)c?', '(a|b)*a(a|b)(a|b)', 'a(a?b*|c+)b|baa']
 # simulation_string = "acccccb"
@@ -51,7 +53,7 @@ from read_yal import *
 # minimization_dfa.simulate()
 
 
-postfix_yal, return_values, final_states_dict = read_yal()
+postfix_yal, return_values, final_states_dict, headers_and_trailers = read_yal()
 root, final_states = build_tree(postfix_yal, return_values)
 render(root)
 tree = ExpressionTree(postfix_yal, final_states)
@@ -61,5 +63,7 @@ tree.firstpos(tree.root)
 tree.lastpos(tree.root)
 tree.followpos(tree.root)
 states_stack, sigma, transitions_stack, initial, final_states_stack, t_states, final_states = tree.generate_transitions(root)
-acepts_dfa_from_subsets = DFA_accepts_R('hola■⌐+■holaЛ', initial, final_states_stack, transitions_stack, t_states, final_states, final_states_dict)
+input_text = read_input()
+tokens = DFA_accepts_R(input_text, initial, final_states_stack, transitions_stack, t_states, final_states, final_states_dict)
+scan(tokens, headers_and_trailers)
 # print("ACEPTA DFA DIRECTO YALEX", acepts_dfa_from_subsets)

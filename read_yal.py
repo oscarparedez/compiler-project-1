@@ -126,9 +126,10 @@ def read_yal():
     # Read rules
     with open('yal/'+file_to_open) as f:
         lines = f.readlines()
+        is_rule = False
         for line in lines:
             line = line.strip()
-            if line != '' and 'rule tokens' not in line and 'let ' not in line and 'if' not in line and 'else' not in line and line.split(' ', 1)[0] != '}' and line.split(' ', 1)[0] != '(*':
+            if line != '' and 'rule tokens' not in line and 'let ' not in line and 'if' not in line and 'else' not in line and line.split(' ', 1)[0] != '}' and line.split(' ', 1)[0] != '(*' and is_rule:
                 if line[0] != '|' and line.split(' ', 1)[0] != 'return':
                     first_rule = line.split()[0]
                     # Get index of the first rule in infixes_keys
@@ -177,6 +178,9 @@ def read_yal():
                         rules += rule_value + '.#' + '|'
                 else:
                     pass
+            if 'rule tokens ' in line:
+                is_rule = True
+                
         rules = rules[:-1]
     rules = rules.replace('s.t.r', '(' + '|'.join(UNDERSCORE) + ')')
     postfix_rules = shunting_yard(rules)
@@ -193,7 +197,6 @@ def read_yal():
             if is_rule and line != '':
                 if line[0] != '|':
                     first_string = line.split()[0]
-                    # print("FIRST", key)
                     if first_string in infixes_keys:
                         key = first_string
                         key = key.replace('\t', '')
@@ -234,6 +237,33 @@ def read_yal():
                             
             if 'rule tokens ' in line:
                 is_rule = True
+    
+    headers_and_trailers = {'headers': '', 'trailers': ''}
+    with open('yal/'+file_to_open) as f:
+        lines = f.readlines()
+        is_header = True
+        for line in lines:
+            if is_header:
+                if '(*' in line and '|' not in line:
+                    if '*)' in line:
+                        headers_and_trailers['headers'] += line[line.index('(*'):line.index('*)')+2] + '\n'
+                    else:
+                        headers_and_trailers['headers'] += line[line.index('(*'):]
+                elif '*)' in line and '|' not in line:
+                    headers_and_trailers['headers'] += line[:line.index('*)')+2] + '\n'
+            
+            else:
+                if '(*' in line and '|' not in line:
+                    if '*)' in line:
+                        headers_and_trailers['trailers'] += line[line.index('(*'):line.index('*)')+2] + '\n'
+                    else:
+                        headers_and_trailers['trailers'] += line[line.index('(*'):]
+                elif '*)' in line and '|' not in line:
+                    headers_and_trailers['trailers'] += line[:line.index('*)')+2] + '\n'
+            
+            if 'let ' in line:
+                is_header = False
+                
                 
     return_list = []
 
@@ -241,7 +271,7 @@ def read_yal():
         value = dictionary[key]
         return_list.append(value)
                             
-    return postfix_rules, return_list, dictionary
+    return postfix_rules, return_list, dictionary, headers_and_trailers
             
 def transform_string(s):
     result = '(' + '|'.join(s) + ')'
@@ -450,4 +480,4 @@ def render(root):
 
     add_node(root)
 
-    digraph.render(file_to_open+'.pdf', view=True)
+    digraph.render(file_to_open+'.pdf', view=False)

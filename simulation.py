@@ -67,4 +67,5 @@ def DFA_accepts_R(string, initial_state, final_states, transitions, t_states, fi
                 matching_id = final_states_ids.index(i)
 
     tokens.append(final_states_dict[matching_id])
-    print(tokens)
+    # print(tokens)
+    return tokens
