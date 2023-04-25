@@ -3,7 +3,7 @@ from ExpressionTree.ExpressionTree import *
 from ExpressionTree.Node import *
 from graphviz import Digraph
 
-file_to_open = 'slr-1.yal'
+file_to_open = 'slr-0.yal'
 def read_yal():
     variables = {}
     infixes = {}
@@ -156,7 +156,6 @@ def read_yal():
                                 for i in range(len(rule_value)):
                                     char_from_rule_value = rule_value[i]
                                     if rule_value[i] == "*":
-                                        # print("IS *")
                                         char_from_rule_value = 'Ж'
                                     elif rule_value[i] == "(":
                                         char_from_rule_value = 'Л'
@@ -181,9 +180,6 @@ def read_yal():
         rules = rules[:-1]
     rules = rules.replace('s.t.r', '(' + '|'.join(UNDERSCORE) + ')')
     postfix_rules = shunting_yard(rules)
-
-    tree = build_tree(postfix_rules)
-    root = render(tree)
     
     dictionary = {}
     
@@ -239,9 +235,13 @@ def read_yal():
             if 'rule tokens ' in line:
                 is_rule = True
                 
-    print(dictionary)
+    return_list = []
+
+    for key in dictionary:
+        value = dictionary[key]
+        return_list.append(value)
                             
-    return postfix_rules
+    return postfix_rules, return_list, dictionary
             
 def transform_string(s):
     result = '(' + '|'.join(s) + ')'
@@ -408,7 +408,8 @@ def get_tokens(expression):
 
     return result
 
-def build_tree(postfix):
+def build_tree(postfix, return_values):
+    final_states_id = []
     nodes = []
     node_id = 1
     for symbol in postfix:
@@ -416,21 +417,12 @@ def build_tree(postfix):
         if not is_operator:
             if symbol == EPSILON:
                 nodes.append(Node(None, symbol))
+            elif symbol == HASHTAG:
+                return_val = return_values.pop()
+                final_states_id.append(node_id)
+                nodes.append(Node(node_id, symbol, return_val))
+                node_id += 1
             else:
-                # if symbol == '¬':
-                #     symbol = "SPACE"
-                # elif symbol == '■':
-                #     symbol = "TAB"
-                # elif symbol == '⌐':
-                #     symbol = "NEWLINE"
-                # elif symbol == 'Ж':
-                #     symbol = '* CHAR'
-                # elif symbol == 'Л':
-                #     symbol = '('
-                # elif symbol == 'Ф':
-                #     symbol = ')'
-                # elif symbol == 'Ц':
-                #     symbol = '. CHAR'
                 nodes.append(Node(node_id, symbol))
                 node_id += 1
         else:
@@ -439,10 +431,10 @@ def build_tree(postfix):
             else:
                 right = nodes.pop()
             left = nodes.pop()
-            new_node = Node(None, symbol, left, right)
+            new_node = Node(None, symbol, None, left, right)
             nodes.append(new_node)
     root = nodes.pop()
-    return root
+    return root, final_states_id
 
 def render(root):
     digraph = Digraph()
@@ -458,4 +450,4 @@ def render(root):
 
     add_node(root)
 
-    digraph.render(file_to_open+'.pdf', view=False)
+    digraph.render(file_to_open+'.pdf', view=True)

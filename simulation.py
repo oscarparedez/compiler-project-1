@@ -40,14 +40,31 @@ def NFA_accepts_R(string, initial_state, final_states, transitions):
     
     return False
 
-def DFA_accepts_R(string, initial_state, final_states, transitions):
-    i = 0
+def DFA_accepts_R(string, initial_state, final_states, transitions, t_states, final_states_ids, final_states_dict):
+    final_states_dict = list(final_states_dict.values())
     s = initial_state
-    while (i < len(string) and s != None):
-        c = string[i]
+    tokens = []
+    prev_s = ''
+    while (len(string) != 0):
+        c = string[0]
         s = transitions.get(s, {}).get(c, None)
-        i += 1
-    if s in final_states:
-        return True
-    else:
-        return False
+        if s is None:
+            get_all_ids = t_states.get(prev_s)
+            for i in get_all_ids:
+                for j in final_states_ids:
+                    if i == j:
+                        matching_id = final_states_ids.index(i)
+            
+            tokens.append(final_states_dict[matching_id])
+            s = initial_state
+        else:
+            prev_s = s
+            string = string[1:]
+    get_all_ids = t_states.get(prev_s)
+    for i in get_all_ids:
+        for j in final_states_ids:
+            if i == j:
+                matching_id = final_states_ids.index(i)
+
+    tokens.append(final_states_dict[matching_id])
+    print(tokens)

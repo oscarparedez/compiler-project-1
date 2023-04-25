@@ -3,9 +3,10 @@ from ExpressionTree.Node import *
 from automathon import DFA
 
 class ExpressionTree:
-    def __init__(self, postfix):
+    def __init__(self, postfix, final_states):
         self.root = None
-        self.postfix = postfix + '#.'
+        self.postfix = postfix + '.#'
+        self.final_states = final_states
     
     def build_tree(self):
         nodes = []
@@ -220,18 +221,22 @@ class ExpressionTree:
                     else:
                         transitions_stack.get(s_key)[symbol] = u_key
     
-        final_state_id = {root.right.id}
+        # final_state_id = {root.right.id}
+        # print("FINALSTATES", self.final_states)
+        # print("DSTATES", t_states.items())
+    
                     
         for u in d_states_array:
-            if final_state_id.issubset(u):
-                for key, value in t_states.items():
-                    if value == u:
-                        final_states_stack.update({key})
+            for final_state in self.final_states:
+                if final_state in u:
+                    for key, value in t_states.items():
+                        if value == u:
+                            final_states_stack.update({key})
         
         automata = DFA(states_stack, sigma, transitions_stack, 'q0', final_states_stack)
         automata.view("DFA DIRECT - YALEX")
         
-        return (states_stack, sigma, transitions_stack, 'q0', final_states_stack)
+        return (states_stack, sigma, transitions_stack, 'q0', final_states_stack, t_states, self.final_states)
             
             
 

@@ -51,12 +51,15 @@ from read_yal import *
 # minimization_dfa.simulate()
 
 
-postfix_yal = read_yal()
-root = build_tree(postfix_yal)
-tree = ExpressionTree(postfix_yal)
+postfix_yal, return_values, final_states_dict = read_yal()
+root, final_states = build_tree(postfix_yal, return_values)
+render(root)
+tree = ExpressionTree(postfix_yal, final_states)
 tree.root = root
 tree.nullable(tree.root)
 tree.firstpos(tree.root)
 tree.lastpos(tree.root)
 tree.followpos(tree.root)
-states_stack, sigma, transitions_stack, initial_state, final_states_stack = tree.generate_transitions(root)
+states_stack, sigma, transitions_stack, initial, final_states_stack, t_states, final_states = tree.generate_transitions(root)
+acepts_dfa_from_subsets = DFA_accepts_R('hola■⌐+■holaЛ', initial, final_states_stack, transitions_stack, t_states, final_states, final_states_dict)
+# print("ACEPTA DFA DIRECTO YALEX", acepts_dfa_from_subsets)
