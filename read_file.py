@@ -3,6 +3,7 @@ def read_input():
     with open('input.txt', encoding='utf-8') as f:
         lines = f.readlines()
         for line in lines:
+            line = '\n' + line
             line = line.replace(' ', '¬')
             line = line.replace('\n', '¬')
             line = line.replace('   ', '■')

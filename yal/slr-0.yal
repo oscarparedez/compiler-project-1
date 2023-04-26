@@ -15,7 +15,7 @@ rule tokens =
     ws  {print('WS')}
   
     | id  {  
-				if True: print("ID")
+				if True: print("IDlllll")
 	}
   
 	| '+'       { print('PLUS') }

@@ -1,17 +1,13 @@
+print("Esto es un header")
+print("Hola")
 #Lexer para Gramática No. 1 - Expresiones aritméticas simples para variables
-#Introducir cualquier header aqui
 #
-print('ID')
-print('WHITE SPACE')
-print('ID')
-print('WHITE SPACE')
-print('ID')
-print('WHITE SPACE')
-print('ID')
-print('PLUS')
+print('WS')
+if True: print("IDlllll")
+print('WS')
 print('TIMES')
+print('WS')
 print('LPAREN')
 print('RPAREN')
-print('PERIOD')
-#Introducir cualquier trailer aqui
+print("adios")
 #
