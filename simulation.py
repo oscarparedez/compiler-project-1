@@ -50,22 +50,24 @@ def DFA_accepts_R(string, initial_state, final_states, transitions, t_states, fi
         s = transitions.get(s, {}).get(c, None)
         if s is None:
             get_all_ids = t_states.get(prev_s)
+            counter = 0
             for i in get_all_ids:
                 for j in final_states_ids:
-                    if i == j:
+                    if i == j and counter == 0:
                         matching_id = final_states_ids.index(i)
-            
+                        counter += 1
             tokens.append(final_states_dict[matching_id])
             s = initial_state
         else:
             prev_s = s
             string = string[1:]
     get_all_ids = t_states.get(prev_s)
+    counter = 0
     for i in get_all_ids:
         for j in final_states_ids:
-            if i == j:
+            if i == j and counter == 0:
                 matching_id = final_states_ids.index(i)
+                counter += 1
 
     tokens.append(final_states_dict[matching_id])
-    # print(tokens)
     return tokens

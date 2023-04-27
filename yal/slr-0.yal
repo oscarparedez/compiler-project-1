@@ -5,25 +5,25 @@ print("Hola")  *)
 (* Lexer para Gramática No. 1 - Expresiones aritméticas simples para variables *)
 
 let delim = [' ''\t''\n']
- let ws = delim+ 
+let ws = delim+ 
 let letter = ['A'-'Z''a'-'z']
 
 let digit = ['0123456789']
-   let id = letter(letter|digit)*
+let id = letter(letter|digit)*
 let id2 = digit(digit|letter)*
 
 rule tokens = 
     ws  {print('WS')}
-  
+	| 'if' {print('IF DETECTED')}
     | id  {  
 				if True: print("ID1")
 	}
-	| id2       { print('ID2') }
   
 	| '+'       { print('PLUS') }
   	| '*'       { print('TIMES') }
   	| '('       { print('LPAREN') }
   	| ')'       { print('RPAREN') }
+	| '.'       { print('PERIOD') }
 	| '*)'		 { print('STARTCOMMENT') }
 
 

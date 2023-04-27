@@ -5,7 +5,7 @@ from automathon import DFA
 class ExpressionTree:
     def __init__(self, postfix, final_states):
         self.root = None
-        self.postfix = postfix + '.#'
+        self.postfix = postfix
         self.final_states = final_states
     
     def build_tree(self):

@@ -3,7 +3,7 @@ from ExpressionTree.ExpressionTree import *
 from ExpressionTree.Node import *
 from graphviz import Digraph
 
-file_to_open = 'slr-0.yal'
+file_to_open = 'slr-4.yal'
 def read_yal():
     variables = {}
     infixes = {}
@@ -129,7 +129,7 @@ def read_yal():
         is_rule = False
         for line in lines:
             line = line.strip()
-            if line != '' and 'rule tokens' not in line and 'let ' not in line and 'if' not in line and 'else' not in line and line.split(' ', 1)[0] != '}' and line.split(' ', 1)[0] != '(*' and is_rule:
+            if line != '' and 'rule tokens' not in line and 'let ' not in line and 'if ' not in line and 'else:' not in line and 'elif ' not in line and line.split(' ', 1)[0] != '}' and line.split(' ', 1)[0] != '(*' and is_rule:
                 if line[0] != '|' and line.split(' ', 1)[0] != 'return':
                     first_rule = line.split()[0]
                     # Get index of the first rule in infixes_keys
@@ -184,9 +184,10 @@ def read_yal():
         rules = rules[:-1]
     rules = rules.replace('s.t.r', '(' + '|'.join(UNDERSCORE) + ')')
     postfix_rules = shunting_yard(rules)
-    
+
+    # Read prints and returns
     dictionary = {}
-    
+
     with open('yal/'+file_to_open) as f:
         lines = f.readlines()
         key = ''
@@ -270,7 +271,7 @@ def read_yal():
     for key in dictionary:
         value = dictionary[key]
         return_list.append(value)
-                            
+    
     return postfix_rules, return_list, dictionary, headers_and_trailers
             
 def transform_string(s):

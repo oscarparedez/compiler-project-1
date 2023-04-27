@@ -1,17 +1,24 @@
-print("Esto es un header")
-print("Hola")
-#Lexer para Gramática No. 1 - Expresiones aritméticas simples para variables
+#Lexer para Gramática No. 4
+#Introducir cualquier header aqui
 #
 print('WS')
-if True: print("ID1")
+print('PLUS')
 print('WS')
 print('TIMES')
 print('WS')
 print('LPAREN')
 print('RPAREN')
 print('WS')
-if True: print("ID1")
+print('TIMES')
+print('RPAREN')
 print('WS')
-print('ID2')
-print("adios")
+print('NUMBER')
+print('WS')
+print('ASSIGNOP')
+print('WS')
+print('LT')
+print('WS')
+print('ID')
+print('DIV')
+#Introducir cualquier trailer aqui
 #
