@@ -6,11 +6,14 @@ let delim = [' ''\t''\n']
 let ws = delim+
 let letter = ['A'-'Z''a'-'z']
 let digit = ['0'-'9']
+let digits = digit+
 let id = letter(letter|digit)*
 
 rule tokens = 
     ws        { print('WHITE SPACE')}
+  | 'if'        { print('IF CONDITION') }    
   | id        { print('ID') }               (* Cambie por una acción válida, que devuelva el token *)
+  | digits        { print('DIGIT') } 
   | '+'       { print('PLUS') }
   | '*'       { print('TIMES') }
   | '('       { print('LPAREN') }

@@ -3,7 +3,7 @@ from ExpressionTree.ExpressionTree import *
 from ExpressionTree.Node import *
 from graphviz import Digraph
 
-file_to_open = 'slr-4.yal'
+file_to_open = 'slr-1.yal'
 def read_yal():
     variables = {}
     infixes = {}
@@ -82,11 +82,11 @@ def read_yal():
                                     my_list.append(val[active_char])
                                 elif val[active_char] == "\\":
                                     if val[active_char+1] == 'n':
-                                        my_list.append('⌐')
+                                        my_list.append('¤')
                                     if val[active_char+1] == 's':
-                                        my_list.append('¬')
+                                        my_list.append('ß')
                                     if val[active_char+1] == 't':
-                                        my_list.append('■')
+                                        my_list.append('§')
                                     active_char += 1
                                 active_char += 1
                                 
@@ -289,11 +289,11 @@ def split_by_quotes(string):
                 if string[j] == "'":
                     new_string = string[i+1:j]
                     if new_string == '\\n':
-                        substrings.append('⌐')
+                        substrings.append('¤')
                     elif new_string == '\\t':
-                        substrings.append('■')
+                        substrings.append('§')
                     elif new_string == '\\s':
-                        substrings.append('¬')
+                        substrings.append('ß')
                     else:
                         substrings.append(new_string)
 
@@ -405,12 +405,12 @@ def get_tokens(expression):
                 tokens.append('.')
             tokens.append(expression[active_index])
         elif expression[active_index] == ' ':
-            tokens.append('¬')
+            tokens.append('ß')
         elif (expression[active_index]) == '\\':
             if expression[active_index+1] == 'n':
-                tokens.append('⌐')
+                tokens.append('¤')
             elif expression[active_index+1] == 't':
-                tokens.append('■')
+                tokens.append('§')
             active_index += 1
         elif (expression[active_index]) == "'" and (expression[active_index+2]) == "'":
             tokens.append(expression[active_index + 1])

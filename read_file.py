@@ -4,9 +4,9 @@ def read_input():
         lines = f.readlines()
         for line in lines:
             line = '\n' + line
-            line = line.replace(' ', '¬')
-            line = line.replace('\n', '¬')
-            line = line.replace('   ', '■')
+            line = line.replace(' ', 'ß')
+            line = line.replace('\n', 'ß')
+            line = line.replace('   ', '§')
             line = line.replace('*', 'Ж')
             line = line.replace('(', 'Л')
             line = line.replace(')', 'Ф')

@@ -12,7 +12,9 @@ let number = digits('.'digits)?('E'['+''-']?digits)?
 
 rule tokens = 
     ws        { print('WHITESPACE') }               (* Cambie por una acción válida, que devuelva el token *)
+  | 'if'        { print('IF CONDITION') } 
   | id        { print('ID') }
+  | digits    { print('DIGIT') }
   | number    { print('NUMBER') }
   | '+'       { print('PLUS') }
   | '-'       { print('MINUS') }

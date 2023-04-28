@@ -16,8 +16,8 @@ POSTFIX_OPERATORS = {
 
 # ALPHABET = ascii_lowercase + ascii_uppercase + digits + EPSILON
 ALPHABET = ascii_lowercase + ascii_uppercase + digits + EPSILON + HASHTAG
-ALPHABET_YALEX = ascii_lowercase + ascii_uppercase + digits + EPSILON + HASHTAG + 'Ж' + 'Л' + 'Ф' + 'Ц' + '/' + '+' + '-' + '¬' + '■' + '⌐'
-UNDERSCORE = ascii_uppercase + ascii_lowercase + digits + '¬' + '■' + '⌐'
+ALPHABET_YALEX = ascii_lowercase + ascii_uppercase + digits + EPSILON + HASHTAG + 'Ж' + 'Л' + 'Ф' + 'Ц' + '/' + '+' + '-' + 'ß' + '§' + '¤'
+UNDERSCORE = ascii_uppercase + ascii_lowercase + digits + 'ß' + '§' + '¤'
 
 def peek(stack):
     if (stack):

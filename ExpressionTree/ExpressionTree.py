@@ -167,9 +167,9 @@ class ExpressionTree:
         with open('input.txt') as f:
             lines = f.readlines()
             for line in lines:
-                line = line.replace(' ', '¬')
-                line = line.replace('\n', '¬')
-                line = line.replace('   ', '■')
+                line = line.replace(' ', 'ß')
+                line = line.replace('\n', 'ß')
+                line = line.replace('   ', '§')
                 line = line.replace('*', 'Ж')
                 line = line.replace('(', 'Л')
                 line = line.replace(')', 'Ф')
