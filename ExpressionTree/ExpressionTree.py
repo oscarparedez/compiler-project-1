@@ -163,6 +163,20 @@ class ExpressionTree:
         for character in self.postfix:
             if character != '.' and character != '*' and character != '|' and character != '#' and character not in sigma:
                 sigma += character
+                
+        with open('input.txt') as f:
+            lines = f.readlines()
+            for line in lines:
+                line = line.replace(' ', '¬')
+                line = line.replace('\n', '¬')
+                line = line.replace('   ', '■')
+                line = line.replace('*', 'Ж')
+                line = line.replace('(', 'Л')
+                line = line.replace(')', 'Ф')
+                line = line.replace('.', 'Ц')
+                for char in line:
+                    if  char not in sigma:
+                        raise Exception('Input File not supported. ',  char, 'not defined in yal file.')
         
         s0 = root.firstpos 
         s0_children_nodes = []
