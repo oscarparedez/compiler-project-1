@@ -1,22 +1,21 @@
-#Lexer para Gramática No. 1 - Expresiones aritméticas simples para variables
+#Lexer para Gramática No. 4
 #Introducir cualquier header aqui
 #
-print('WHITE SPACE')
-print('IF CONDITION')
-print('WHITE SPACE')
+print('WS')
+print('ID')
 print('RPAREN')
-print('WHITE SPACE')
-print('DIGIT')
-print('WHITE SPACE')
+print('WS')
+print('NUMBER')
+print('WS')
 print('TIMES')
-print('WHITE SPACE')
+print('WS')
 print('PLUS')
-print('WHITE SPACE')
+print('WS')
 print('RPAREN')
 print('LPAREN')
-print('WHITE SPACE')
+print('WS')
 print('TIMES')
-print('WHITE SPACE')
+print('WS')
 print('ID')
 #Introducir cualquier trailer aqui
 #

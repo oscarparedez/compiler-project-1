@@ -3,7 +3,7 @@ from ExpressionTree.ExpressionTree import *
 from ExpressionTree.Node import *
 from graphviz import Digraph
 
-file_to_open = 'slr-1.yal'
+file_to_open = 'slr-4.yal'
 def read_yal():
     variables = {}
     infixes = {}
