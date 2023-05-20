@@ -147,7 +147,7 @@ def render_automata(states, transitions, filename):
                  'q'+str(states.index(transition[2])), 
                  label=transition[1])
 
-    dot.render(filename, view=True)
+    dot.render('yalp_results/'+filename, view=True)
 
 
 
